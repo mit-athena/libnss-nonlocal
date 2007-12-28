@@ -1,0 +1,25 @@
+libnss-nonlocal (1.2) unstable; urgency=low
+
+  * Use a magic buflen instead of thread-local variables, to avoid
+    strange problems on sarge.
+  * Don't link with pthread.
+
+ -- Anders Kaseorg <andersk@mit.edu>  Tue, 07 Aug 2007 22:00:28 -0400
+
+libnss-nonlocal (1.1) unstable; urgency=low
+
+  * Link with pthread to be safe.
+
+ -- Anders Kaseorg <andersk@mit.edu>  Fri, 03 Aug 2007 21:24:17 -0400
+
+libnss-nonlocal (1.0-0debathena2) unstable; urgency=low
+
+  * Section: debathena/libs.
+
+ -- Anders Kaseorg <andersk@mit.edu>  Mon, 23 Jul 2007 14:14:46 -0400
+
+libnss-nonlocal (1.0-0debathena1) unstable; urgency=low
+
+  * Initial release.
+
+ -- Anders Kaseorg <andersk@mit.edu>  Thu, 19 Jul 2007 21:07:50 -0400
