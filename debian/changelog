@@ -1,3 +1,9 @@
+libnss-nonlocal (1.3-0debathena2) unstable; urgency=low
+
+  * Set maintainer to debathena@mit.edu.
+
+ -- Tim Abbott <tabbott@mit.edu>  Tue, 29 Jan 2008 22:18:25 -0500
+
 libnss-nonlocal (1.3-0debathena1) unstable; urgency=low
 
   * Have initgroups() only add nonlocal groups to nonlocal users.
