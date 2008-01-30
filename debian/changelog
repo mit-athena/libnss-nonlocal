@@ -1,3 +1,12 @@
+libnss-nonlocal (1.3-0debathena1) unstable; urgency=low
+
+  * Have initgroups() only add nonlocal groups to nonlocal users.
+  * If a group called nss-local-users exists, add local users to it.
+  * If a group called nss-nonlocal-users exists, add nonlocal users to it.
+  * Create nss-local-users and nss-nonlocal-users at installation.
+
+ -- Tim Abbott <tabbott@mit.edu>  Tue, 29 Jan 2008 22:11:37 -0500
+
 libnss-nonlocal (1.2) unstable; urgency=low
 
   * Use a magic buflen instead of thread-local variables, to avoid

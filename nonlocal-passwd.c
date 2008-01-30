@@ -2,7 +2,8 @@
  * nonlocal-passwd.c
  * passwd database for nss_nonlocal proxy.
  *
- * Copyright © 2007 Anders Kaseorg <andersk@mit.edu>
+ * Copyright © 2007 Anders Kaseorg <andersk@mit.edu> and Tim Abbott
+ * <tabbott@mit.edu>
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -85,6 +86,33 @@ check_nonlocal_uid(const char *user, uid_t uid, int *errnop)
     return status;
 }
 
+enum nss_status
+check_nonlocal_user(const char *user, int *errnop)
+{
+    enum nss_status status = NSS_STATUS_SUCCESS;
+    struct passwd pwbuf;
+    struct passwd *pwbufp = &pwbuf;
+    int ret;
+    int old_errno = errno;
+    int buflen = MAGIC_LOCAL_PW_BUFLEN;
+    char *buf = malloc(buflen);
+    if (buf == NULL) {
+	*errnop = ENOMEM;
+	errno = old_errno;
+	return NSS_STATUS_TRYAGAIN;
+    }
+    errno = 0;
+    ret = getpwnam_r(user, pwbufp, buf, buflen, &pwbufp);
+    if (ret != 0) {
+	*errnop = errno;
+	status = NSS_STATUS_TRYAGAIN;
+    } else if (pwbufp != NULL) {
+	status = NSS_STATUS_NOTFOUND;
+    }
+    free(buf);
+    errno = old_errno;
+    return status;
+}
 
 static service_user *pwent_nip = NULL;
 static void *pwent_fct_start;
@@ -204,6 +232,9 @@ _nss_nonlocal_getpwnam_r(const char *name, struct passwd *pwd,
 	void *ptr;
     } fct;
     int group_errno;
+
+    if (buflen == MAGIC_LOCAL_PW_BUFLEN)
+	return NSS_STATUS_UNAVAIL;
 
     nip = nss_passwd_nonlocal_database();
     if (nip == NULL)
