@@ -114,6 +114,7 @@ check_nonlocal_user(const char *user, int *errnop)
     return status;
 }
 
+
 static service_user *pwent_nip = NULL;
 static void *pwent_fct_start;
 static union {

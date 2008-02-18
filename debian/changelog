@@ -1,3 +1,9 @@
+libnss-nonlocal (1.4-0debathena1) unstable; urgency=low
+
+  * Bug fixes and cleanups.
+
+ -- Anders Kaseorg <andersk@mit.edu>  Fri, 15 Feb 2008 21:39:50 -0500
+
 libnss-nonlocal (1.3-0debathena2) unstable; urgency=low
 
   * Set maintainer to debathena@mit.edu.
