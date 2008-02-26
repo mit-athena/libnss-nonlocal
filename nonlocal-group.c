@@ -223,6 +223,12 @@ _nss_nonlocal_getgrent_r(struct group *grp, char *buffer, size_t buflen,
 			 int *errnop)
 {
     enum nss_status status;
+
+    char *nonlocal_ignore = getenv(NONLOCAL_IGNORE_ENV);
+    if (buflen == MAGIC_LOCAL_GR_BUFLEN ||
+	(nonlocal_ignore != NULL && nonlocal_ignore[0] != '\0'))
+	return NSS_STATUS_UNAVAIL;
+
     if (grent_nip == NULL) {
 	status = _nss_nonlocal_setgrent(0);
 	if (status != NSS_STATUS_SUCCESS)
@@ -264,7 +270,9 @@ _nss_nonlocal_getgrnam_r(const char *name, struct group *grp,
 	void *ptr;
     } fct;
 
-    if (buflen == MAGIC_LOCAL_GR_BUFLEN)
+    char *nonlocal_ignore = getenv(NONLOCAL_IGNORE_ENV);
+    if (buflen == MAGIC_LOCAL_GR_BUFLEN ||
+	(nonlocal_ignore != NULL && nonlocal_ignore[0] != '\0'))
 	return NSS_STATUS_UNAVAIL;
 
     nip = nss_group_nonlocal_database();
@@ -301,7 +309,9 @@ _nss_nonlocal_getgrgid_r(gid_t gid, struct group *grp,
 	void *ptr;
     } fct;
 
-    if (buflen == MAGIC_LOCAL_GR_BUFLEN)
+    char *nonlocal_ignore = getenv(NONLOCAL_IGNORE_ENV);
+    if (buflen == MAGIC_LOCAL_GR_BUFLEN ||
+	(nonlocal_ignore != NULL && nonlocal_ignore[0] != '\0'))
 	return NSS_STATUS_UNAVAIL;
 
     nip = nss_group_nonlocal_database();

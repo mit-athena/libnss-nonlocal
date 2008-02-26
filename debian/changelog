@@ -1,3 +1,12 @@
+libnss-nonlocal (1.5-0debathena1) unstable; urgency=low
+
+  * Add support for NSS_NONLOCAL_IGNORE environment variable, which
+    causes nss_nonlocal to pretend there are no nonlocal users.  This
+    allows us to support letting adduser add users and groups with the
+    same name as a nonlocal user/group.
+
+ -- Tim Abbott <tabbott@mit.edu>  Mon, 25 Feb 2008 19:12:30 -0500
+
 libnss-nonlocal (1.4-0debathena1) unstable; urgency=low
 
   * Bug fixes and cleanups.
