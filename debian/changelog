@@ -1,3 +1,9 @@
+libnss-nonlocal (1.6-0debathena1) unstable; urgency=low
+
+  * Use a version script to hide internal symbols.
+
+ -- Anders Kaseorg <andersk@mit.edu>  Sat, 15 Mar 2008 06:42:02 -0400
+
 libnss-nonlocal (1.5-0debathena1) unstable; urgency=low
 
   * Add support for NSS_NONLOCAL_IGNORE environment variable, which

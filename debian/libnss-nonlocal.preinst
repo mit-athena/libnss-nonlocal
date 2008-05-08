@@ -1,5 +1,5 @@
 #!/bin/sh
-# preinst script for debathena-liblocker
+# preinst script for libnss-nonlocal
 #
 # see: dh_installdeb(1)
 

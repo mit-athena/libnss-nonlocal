@@ -11,8 +11,10 @@ ALL_LDFLAGS = $(LDFLAGS) -shared -Wl,-x
 
 all: libnss_nonlocal.so.2 linktest
 
-libnss_nonlocal.so.2: nonlocal-passwd.o nonlocal-group.o nonlocal-shadow.o
-	$(CC) -o $@ $(ALL_LDFLAGS) -Wl,-soname,$@ $^ $(LOADLIBES) $(LDLIBS)
+OBJS = nonlocal-passwd.o nonlocal-group.o nonlocal-shadow.o
+
+libnss_nonlocal.so.2: $(OBJS) libnss_nonlocal.map
+	$(CC) -o $@ $(ALL_LDFLAGS) -Wl,-soname,$@ -Wl,--version-script=libnss_nonlocal.map $(OBJS) $(LOADLIBES) $(LDLIBS)
 
 %.o: %.c
 	$(CC) -c $(ALL_CFLAGS) $(CPPFLAGS) $<
@@ -29,6 +31,6 @@ install: libnss_nonlocal.so.2
 	$(INSTALL) -m a+r,u+w $< $(DESTDIR)$(libdir)/
 
 clean:
-	rm -f *.so.* *.o test-nonlocal
+	rm -f *.so.* *.o
 
 .PHONY: all linktest install clean
