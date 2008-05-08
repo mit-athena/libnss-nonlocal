@@ -4,7 +4,6 @@ libdir = $(exec_prefix)/lib
 INSTALL = install
 CC = gcc
 CFLAGS = -O2 -Wall
-LD = ld
 
 ALL_CFLAGS = $(CFLAGS) -fPIC
 ALL_LDFLAGS = $(LDFLAGS) -shared -Wl,-x
@@ -24,7 +23,7 @@ nonlocal-group.o: nonlocal-group.c nsswitch-internal.h nonlocal.h
 nonlocal-shadow.o: nonlocal-shadow.c nsswitch-internal.h nonlocal.h
 
 linktest: libnss_nonlocal.so.2
-	$(LD) --entry=0 -o /dev/null $^
+	$(CC) $(LDFLAGS) -nostdlib -Wl,--entry=0 -o /dev/null $^
 
 install: libnss_nonlocal.so.2
 	$(INSTALL) -d $(DESTDIR)$(libdir)
