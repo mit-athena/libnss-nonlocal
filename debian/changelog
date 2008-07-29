@@ -1,3 +1,13 @@
+libnss-nonlocal (1.7-0debathena1) unstable; urgency=low
+
+  * Replace the magic buflen hack with explicit iteration over the nss
+    chain, so that getpwent/getgrent works with nscd enabled.
+  * Fix some memory leaks.
+  * Autotoolfiscate.
+  * Code cleanup.
+
+ -- Anders Kaseorg <andersk@mit.edu>  Tue, 29 Jul 2008 06:57:53 -0400
+
 libnss-nonlocal (1.6-0debathena1) unstable; urgency=low
 
   * Use a version script to hide internal symbols.
