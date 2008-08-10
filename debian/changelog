@@ -1,3 +1,9 @@
+libnss-nonlocal (1.8-0debathena1) unstable; urgency=low
+
+  * Correct the buffer size passed to realloc.
+
+ -- Anders Kaseorg <andersk@mit.edu>  Sat, 09 Aug 2008 22:41:57 -0400
+
 libnss-nonlocal (1.7-0debathena1) unstable; urgency=low
 
   * Replace the magic buflen hack with explicit iteration over the nss
