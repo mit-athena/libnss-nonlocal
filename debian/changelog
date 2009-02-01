@@ -1,3 +1,12 @@
+libnss-nonlocal (1.8-0debathena3) unstable; urgency=low
+
+  * Force exclusion of glibc-private dependency.  This is necessary for
+    libnss-nonlocal to build and install with libc6 2.9 in Ubuntu Jaunty
+    and Debian experimental, which now generates an invalid dependency on
+    glibc-private for uses of private glibc symbols.
+
+ -- Anders Kaseorg <andersk@mit.edu>  Sun, 01 Feb 2009 00:26:31 -0500
+
 libnss-nonlocal (1.8-0debathena2) unstable; urgency=low
 
   * Change "Debian-Athena Project" to "Debathena Project".

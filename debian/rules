@@ -10,6 +10,7 @@ include /usr/share/cdbs/1/rules/debhelper.mk
 include /usr/share/cdbs/1/class/autotools.mk
 
 DEB_CONFIGURE_PREFIX = /
+DEB_DH_SHLIBDEPS_ARGS = -- -xglibc-private
 
 debian/stamp-autotools-files: DEB_AUTO_UPDATE_AUTOMAKE += --foreign --add-missing
 
