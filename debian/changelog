@@ -1,3 +1,10 @@
+libnss-nonlocal (1.8-0debathena4) unstable; urgency=low
+
+  * Only exclude glibc-private for new enough libc6, because old
+    dpkg-shlibdeps does not support -x.
+
+ -- Anders Kaseorg <andersk@mit.edu>  Thu, 05 Feb 2009 01:59:08 -0500
+
 libnss-nonlocal (1.8-0debathena3) unstable; urgency=low
 
   * Force exclusion of glibc-private dependency.  This is necessary for

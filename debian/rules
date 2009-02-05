@@ -10,7 +10,11 @@ include /usr/share/cdbs/1/rules/debhelper.mk
 include /usr/share/cdbs/1/class/autotools.mk
 
 DEB_CONFIGURE_PREFIX = /
-DEB_DH_SHLIBDEPS_ARGS = -- -xglibc-private
+
+LIBC6_VERSION := $(shell dpkg-query --showformat='$${Version}' --show libc6)
+ifeq ($(shell dpkg --compare-versions '$(LIBC6_VERSION)' '>=' '2.8+20080809' && echo y),y)
+    DEB_DH_SHLIBDEPS_ARGS = -- -xglibc-private
+endif
 
 debian/stamp-autotools-files: DEB_AUTO_UPDATE_AUTOMAKE += --foreign --add-missing
 
