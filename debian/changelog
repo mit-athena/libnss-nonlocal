@@ -1,3 +1,11 @@
+libnss-nonlocal (1.9-0debathena1) unstable; urgency=low
+
+  * New upstream version.
+    - Corrects an out-of-memory error in the presence of very large local
+      groups.
+
+ -- Anders Kaseorg <andersk@mit.edu>  Sun, 24 May 2009 17:30:08 -0400
+
 libnss-nonlocal (1.8-0debathena4) unstable; urgency=low
 
   * Only exclude glibc-private for new enough libc6, because old
