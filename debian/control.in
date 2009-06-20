@@ -3,7 +3,7 @@ Section: debathena/libs
 Priority: optional
 Maintainer: Debathena Project <debathena@mit.edu>
 Standards-Version: 3.7.2
-Build-Depends: @cdbs@
+Build-Depends: @cdbs@, gcc-multilib [amd64 i386] | gcc-4.1 (<< 4.1.2) [amd64 i386], libc6-dev-i386 [amd64], libc6-dev-amd64 [i386], lsb-release
 
 Package: libnss-nonlocal
 Architecture: any
@@ -12,3 +12,25 @@ Description: nsswitch proxy module to prevent local account spoofing
  This nsswitch module acts as a proxy for other nsswitch modules like 
  hesiod, but prevents non-local users from potentially gaining local 
  privileges by spoofing local UIDs and GIDs.
+
+Package: lib32nss-nonlocal
+Architecture: amd64
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: nsswitch proxy module to prevent local account spoofing (32-bit library)
+ This nsswitch module acts as a proxy for other nsswitch modules like 
+ hesiod, but prevents non-local users from potentially gaining local 
+ privileges by spoofing local UIDs and GIDs.
+ .
+ This package contains a 32-bit version of the library for compatibility 
+ on 64-bit architectures.
+
+Package: lib64nss-nonlocal
+Architecture: i386
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: nsswitch proxy module to prevent local account spoofing (64-bit library)
+ This nsswitch module acts as a proxy for other nsswitch modules like 
+ hesiod, but prevents non-local users from potentially gaining local 
+ privileges by spoofing local UIDs and GIDs.
+ .
+ This package contains a 64-bit version of the library for compatibility 
+ on 32-bit architectures.

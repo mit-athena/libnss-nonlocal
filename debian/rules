@@ -9,6 +9,8 @@ DEB_AUTO_UPDATE_LIBTOOL = pre
 include /usr/share/cdbs/1/rules/debhelper.mk
 include /usr/share/cdbs/1/class/autotools.mk
 
+DEB_DESTDIR = $(CURDIR)/debian/tmp/
+DEB_DH_INSTALL_SOURCEDIR = $(DEB_DESTDIR)
 DEB_CONFIGURE_PREFIX = /
 
 LIBC6_VERSION := $(shell dpkg-query --showformat='$${Version}' --show libc6)
@@ -21,6 +23,39 @@ debian/stamp-autotools-files: DEB_AUTO_UPDATE_AUTOMAKE += --foreign --add-missin
 debian/stamp-autotools-files: aclocal.m4
 aclocal.m4:
 	touch $@
+
+DEB_BUILDDIR = $(or $(DEB_BUILDDIR_$(cdbs_curpkg)),debian/build)
+
+REAL_DEB_HOST_GNU_TYPE := $(DEB_HOST_GNU_TYPE)
+
+DEB_BUILDDIR_lib32nss-nonlocal = debian/build_32
+configure/lib32nss-nonlocal:: CC += -m32
+cleanbuilddir/lib32nss-nonlocal:: clean/lib32nss-nonlocal
+ifeq ($(shell lsb_release -is), Ubuntu)
+configure/lib32nss-nonlocal:: DEB_BUILD_GNU_TYPE = i686-linux
+configure/lib32nss-nonlocal:: DEB_CONFIGURE_EXTRA_FLAGS += --libdir="\$${prefix}/lib32"
+else
+configure/lib32nss-nonlocal:: DEB_BUILD_GNU_TYPE = i486-linux
+configure/lib32nss-nonlocal:: DEB_CONFIGURE_PREFIX = /emul/ia32-linux
+endif
+
+DEB_BUILDDIR_lib64nss-nonlocal = debian/build_64
+configure/lib64nss-nonlocal:: DEB_BUILD_GNU_TYPE = x86_64-linux
+configure/lib64nss-nonlocal:: CC += -m64 -D__x86_64__
+cleanbuilddir/lib64nss-nonlocal:: clean/lib64nss-nonlocal
+configure/lib64nss-nonlocal:: DEB_CONFIGURE_EXTRA_FLAGS += --libdir="\$${prefix}/lib64"
+
+configure/lib32nss-nonlocal configure/lib64nss-nonlocal::
+	$(DEB_CONFIGURE_INVOKE) $(cdbs_configure_flags) $(DEB_CONFIGURE_EXTRA_FLAGS) $(DEB_CONFIGURE_USER_FLAGS)
+
+build/lib32nss-nonlocal build/lib64nss-nonlocal::
+	+$(DEB_MAKE_INVOKE) $(DEB_MAKE_BUILD_TARGET)
+
+install/lib32nss-nonlocal install/lib64nss-nonlocal::
+	+$(DEB_MAKE_INVOKE) $(DEB_MAKE_INSTALL_TARGET)
+
+clean/lib32nss-nonlocal clean/lib64nss-nonlocal::
+	+-$(DEB_MAKE_INVOKE) -k $(DEB_MAKE_CLEAN_TARGET)
 
 clean::
 	rm -f aclocal.m4 config.guess config.sub install-sh ltmain.sh \

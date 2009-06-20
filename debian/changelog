@@ -1,3 +1,9 @@
+libnss-nonlocal (1.9-0debathena2) unstable; urgency=low
+
+  * Also build a biarch lib32nss-nonlocal or lib64nss-nonlocal package.
+
+ -- Anders Kaseorg <andersk@mit.edu>  Fri, 19 Jun 2009 23:54:38 -0400
+
 libnss-nonlocal (1.9-0debathena1) unstable; urgency=low
 
   * New upstream version.
