@@ -33,6 +33,7 @@
 #include <string.h>
 #include <dlfcn.h>
 #include <stdio.h>
+#include <syslog.h>
 #include <errno.h>
 #include <shadow.h>
 #include <nss.h>
@@ -179,5 +180,13 @@ _nss_nonlocal_getspnam_r(const char *name, struct spwd *pwd,
 	if (status == NSS_STATUS_TRYAGAIN && *errnop == ERANGE)
 	    break;
     } while (__nss_next(&nip, fct_name, &fct.ptr, status, 0) == 0);
-    return status;
+    if (status != NSS_STATUS_SUCCESS)
+	return status;
+
+    if (strcmp(name, pwd->sp_namp) != 0) {
+	syslog(LOG_ERR, "nss_nonlocal: discarding shadow %s from lookup for shadow %s\n", pwd->sp_namp, name);
+	return NSS_STATUS_NOTFOUND;
+    }
+
+    return NSS_STATUS_SUCCESS;
 }

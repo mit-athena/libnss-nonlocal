@@ -79,7 +79,7 @@ check_nonlocal_uid(const char *user, uid_t uid, int *errnop)
     struct passwd pwbuf;
     int old_errno = errno;
 
-    int buflen = sysconf(_SC_GETPW_R_SIZE_MAX);
+    size_t buflen = sysconf(_SC_GETPW_R_SIZE_MAX);
     char *buf = malloc(buflen);
     if (buf == NULL) {
 	*errnop = ENOMEM;
@@ -125,6 +125,25 @@ check_nonlocal_uid(const char *user, uid_t uid, int *errnop)
 }
 
 enum nss_status
+check_nonlocal_passwd(const char *user, struct passwd *pwd, int *errnop)
+{
+    enum nss_status status = NSS_STATUS_SUCCESS;
+    int old_errno = errno;
+    char *end;
+    unsigned long uid;
+
+    errno = 0;
+    uid = strtoul(pwd->pw_name, &end, 10);
+    if (errno == 0 && *end == '\0' && (uid_t)uid == uid)
+	status = check_nonlocal_uid(user, uid, errnop);
+    errno = old_errno;
+    if (status != NSS_STATUS_SUCCESS)
+	return status;
+
+    return check_nonlocal_uid(user, pwd->pw_uid, errnop);
+}
+
+enum nss_status
 check_nonlocal_user(const char *user, int *errnop)
 {
     static const char *fct_name = "getpwnam_r";
@@ -140,7 +159,7 @@ check_nonlocal_user(const char *user, int *errnop)
     struct passwd pwbuf;
     int old_errno = errno;
 
-    int buflen = sysconf(_SC_GETPW_R_SIZE_MAX);
+    size_t buflen = sysconf(_SC_GETPW_R_SIZE_MAX);
     char *buf = malloc(buflen);
     if (buf == NULL) {
 	*errnop = ENOMEM;
@@ -279,7 +298,7 @@ _nss_nonlocal_getpwent_r(struct passwd *pwd, char *buffer, size_t buflen,
 	    do
 		status = DL_CALL_FCT(pwent_fct.l, (pwd, buffer, buflen, errnop));
 	    while (status == NSS_STATUS_SUCCESS &&
-		   check_nonlocal_uid(pwd->pw_name, pwd->pw_uid, &nonlocal_errno) != NSS_STATUS_SUCCESS);
+		   check_nonlocal_passwd(pwd->pw_name, pwd, &nonlocal_errno) != NSS_STATUS_SUCCESS);
 	}
 	if (status == NSS_STATUS_TRYAGAIN && *errnop == ERANGE)
 	    return status;
@@ -329,7 +348,12 @@ _nss_nonlocal_getpwnam_r(const char *name, struct passwd *pwd,
     if (status != NSS_STATUS_SUCCESS)
 	return status;
 
-    status = check_nonlocal_uid(name, pwd->pw_uid, errnop);
+    if (strcmp(name, pwd->pw_name) != 0) {
+	syslog(LOG_ERR, "nss_nonlocal: discarding user %s from lookup for user %s\n", pwd->pw_name, name);
+	return NSS_STATUS_NOTFOUND;
+    }
+
+    status = check_nonlocal_passwd(name, pwd, errnop);
     if (status != NSS_STATUS_SUCCESS)
 	return status;
 
@@ -375,7 +399,7 @@ _nss_nonlocal_getpwuid_r(uid_t uid, struct passwd *pwd,
     if (status != NSS_STATUS_SUCCESS)
 	return status;
 
-    status = check_nonlocal_uid(pwd->pw_name, pwd->pw_uid, errnop);
+    status = check_nonlocal_passwd(pwd->pw_name, pwd, errnop);
     if (status != NSS_STATUS_SUCCESS)
 	return status;
 

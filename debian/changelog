@@ -1,3 +1,11 @@
+libnss-nonlocal (1.10-0debathena1) unstable; urgency=low
+
+  * New upstream version.
+    - Disallow numeric nonlocal user/group names that look like local
+      uid/gids.
+
+ -- Anders Kaseorg <andersk@mit.edu>  Fri, 23 Oct 2009 13:49:43 -0400
+
 libnss-nonlocal (1.9-0debathena2) unstable; urgency=low
 
   * Also build a biarch lib32nss-nonlocal or lib64nss-nonlocal package.
