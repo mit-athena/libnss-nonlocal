@@ -1,4 +1,4 @@
-libnss-nonlocal (1.10-0debathena2) unstable; urgency=low
+libnss-nonlocal (1.11-0debathena1) unstable; urgency=low
 
   * Change syslog priority when removing local groups from non-local users
 
