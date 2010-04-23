@@ -1,3 +1,9 @@
+libnss-nonlocal (1.10-0debathena2) unstable; urgency=low
+
+  * Change syslog priority when removing local groups from non-local users
+
+ -- Jonathan Reed <jdreed@mit.edu>  Fri, 23 Apr 2010 13:21:21 -0400
+
 libnss-nonlocal (1.10-0debathena1) unstable; urgency=low
 
   * New upstream version.

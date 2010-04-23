@@ -116,7 +116,7 @@ check_nonlocal_gid(const char *user, gid_t gid, int *errnop)
     } while (__nss_next(&nip, fct_name, &fct.ptr, status, 0) == 0);
 
     if (status == NSS_STATUS_SUCCESS) {
-	syslog(LOG_WARNING, "nss_nonlocal: removing local group %u (%s) from non-local user %s\n", gbuf.gr_gid, gbuf.gr_name, user);
+	syslog(LOG_DEBUG, "nss_nonlocal: removing local group %u (%s) from non-local user %s\n", gbuf.gr_gid, gbuf.gr_name, user);
 	status = NSS_STATUS_NOTFOUND;
     } else if (status != NSS_STATUS_TRYAGAIN) {
 	status = NSS_STATUS_SUCCESS;
