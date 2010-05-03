@@ -6,6 +6,10 @@ DEB_AUTO_UPDATE_AUTOMAKE = 1.9
 DEB_AUTO_UPDATE_ACLOCAL = 1.9
 DEB_AUTO_UPDATE_LIBTOOL = pre
 
+# Fix http://bugs.debian.org/576967 : CDBS 0.4.77 in squeeze
+# incorrectly splits multiword $(CC) and $(CXX).
+override cdbs_set_nondefaultvars = $(foreach var,$1,$(if $(filter-out $(origin $(var)),default),$(var)='$($(var))'))
+
 include /usr/share/cdbs/1/rules/debhelper.mk
 include /usr/share/cdbs/1/class/autotools.mk
 
@@ -13,8 +17,11 @@ DEB_DESTDIR = $(CURDIR)/debian/tmp/
 DEB_DH_INSTALL_SOURCEDIR = $(DEB_DESTDIR)
 DEB_CONFIGURE_PREFIX = /
 
+IS_UBUNTU := $(if $(filter Ubuntu, $(shell lsb_release -is)), y)
 LIBC6_VERSION := $(shell dpkg-query --showformat='$${Version}' --show libc6)
-ifeq ($(shell dpkg --compare-versions '$(LIBC6_VERSION)' '>=' '2.8+20080809' && echo y),y)
+libc6_ge = $(shell dpkg --compare-versions '$(LIBC6_VERSION)' ge '$(1)' && echo y)
+
+ifeq ($(call libc6_ge, 2.8+20080809), y)
     DEB_DH_SHLIBDEPS_ARGS = -- -xglibc-private
 endif
 
@@ -29,20 +36,33 @@ DEB_BUILDDIR = $(or $(DEB_BUILDDIR_$(cdbs_curpkg)),debian/build)
 REAL_DEB_HOST_GNU_TYPE := $(DEB_HOST_GNU_TYPE)
 
 DEB_BUILDDIR_lib32nss-nonlocal = debian/build_32
-configure/lib32nss-nonlocal:: CC += -m32
 cleanbuilddir/lib32nss-nonlocal:: clean/lib32nss-nonlocal
-ifeq ($(shell lsb_release -is), Ubuntu)
+configure/lib32nss-nonlocal:: cdbs_crossbuild =
+# i386_configure_target in eglibc/debian/sysdeps/amd64.mk
+ifeq ($(or $(IS_UBUNTU), $(call libc6_ge, 2.8+20080809)), y)
 configure/lib32nss-nonlocal:: DEB_BUILD_GNU_TYPE = i686-linux
-configure/lib32nss-nonlocal:: DEB_CONFIGURE_EXTRA_FLAGS += --libdir="\$${prefix}/lib32"
 else
 configure/lib32nss-nonlocal:: DEB_BUILD_GNU_TYPE = i486-linux
+endif
+# i386_CC in eglibc/debian/sysdeps/amd64.mk
+configure/lib32nss-nonlocal:: CC += -m32
+# i386_slibdir in eglibc/debian/sysdeps/amd64.mk
+ifeq ($(or $(IS_UBUNTU), $(call libc6_ge, 2.9-14~)), y)
+configure/lib32nss-nonlocal:: DEB_CONFIGURE_EXTRA_FLAGS += --libdir="\$${prefix}/lib32"
+binary-install/lib32nss-nonlocal:: DEB_DH_INSTALL_ARGS = 'lib32/*'
+else
 configure/lib32nss-nonlocal:: DEB_CONFIGURE_PREFIX = /emul/ia32-linux
+binary-install/lib32nss-nonlocal:: DEB_DH_INSTALL_ARGS = 'emul/ia32-linux/lib/*'
 endif
 
 DEB_BUILDDIR_lib64nss-nonlocal = debian/build_64
-configure/lib64nss-nonlocal:: DEB_BUILD_GNU_TYPE = x86_64-linux
-configure/lib64nss-nonlocal:: CC += -m64 -D__x86_64__
 cleanbuilddir/lib64nss-nonlocal:: clean/lib64nss-nonlocal
+configure/lib64nss-nonlocal:: cdbs_crossbuild =
+# amd64_configure_target in eglibc/debian/sysdeps/i386.mk
+configure/lib64nss-nonlocal:: DEB_BUILD_GNU_TYPE = x86_64-linux
+# amd64_CC in eglibc/debian/sysdeps/i386.mk
+configure/lib64nss-nonlocal:: CC += -m64 -D__x86_64__
+# amd64_slibdir in eglibc/debian/sysdeps/i386.mk
 configure/lib64nss-nonlocal:: DEB_CONFIGURE_EXTRA_FLAGS += --libdir="\$${prefix}/lib64"
 
 configure/lib32nss-nonlocal configure/lib64nss-nonlocal::

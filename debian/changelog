@@ -1,3 +1,22 @@
+libnss-nonlocal (1.11-0debathena1) unstable; urgency=low
+
+  * New upstream release.
+    - Check that a nonlocal lookup by id returns the right id.
+    - Update licensing to LGPLv2.1+.
+    - Change syslog priority when removing local groups from non-local
+      users
+  * Update build flags for biarch packages (fixes lib32nss-nonlocal path
+    on squeeze).
+  * Fix FTBFS on squeeze due to CDBS’s buggy splitting of multiword
+    $(CC) (Debian bug #576967).
+  * Disable CDBS cross-building logic, to fix a mysterious FTBFS where
+    configure --host fails to find nm.
+  * Bump Standards-Version to 3.8.4 (no changes required).
+  * Bump Debhelper compatibility level to 6.
+  * Set maintainer to me.
+
+ -- Anders Kaseorg <andersk@mit.edu>  Mon, 03 May 2010 00:45:14 -0400
+
 libnss-nonlocal (1.10-0debathena1) unstable; urgency=low
 
   * New upstream version.
