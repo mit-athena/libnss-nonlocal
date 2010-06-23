@@ -17,11 +17,11 @@ DEB_DESTDIR = $(CURDIR)/debian/tmp/
 DEB_DH_INSTALL_SOURCEDIR = $(DEB_DESTDIR)
 DEB_CONFIGURE_PREFIX = /
 
-IS_UBUNTU := $(if $(filter Ubuntu, $(shell lsb_release -is)), y)
+IS_UBUNTU := $(if $(filter Ubuntu,$(shell lsb_release -is)),y)
 LIBC6_VERSION := $(shell dpkg-query --showformat='$${Version}' --show libc6)
 libc6_ge = $(shell dpkg --compare-versions '$(LIBC6_VERSION)' ge '$(1)' && echo y)
 
-ifeq ($(call libc6_ge, 2.8+20080809), y)
+ifeq ($(call libc6_ge,2.8+20080809),y)
     DEB_DH_SHLIBDEPS_ARGS = -- -xglibc-private
 endif
 
@@ -39,7 +39,7 @@ DEB_BUILDDIR_lib32nss-nonlocal = debian/build_32
 cleanbuilddir/lib32nss-nonlocal:: clean/lib32nss-nonlocal
 configure/lib32nss-nonlocal:: cdbs_crossbuild =
 # i386_configure_target in eglibc/debian/sysdeps/amd64.mk
-ifeq ($(or $(IS_UBUNTU), $(call libc6_ge, 2.8+20080809)), y)
+ifeq ($(or $(IS_UBUNTU),$(call libc6_ge,2.8+20080809)),y)
 configure/lib32nss-nonlocal:: DEB_BUILD_GNU_TYPE = i686-linux
 else
 configure/lib32nss-nonlocal:: DEB_BUILD_GNU_TYPE = i486-linux
@@ -47,7 +47,7 @@ endif
 # i386_CC in eglibc/debian/sysdeps/amd64.mk
 configure/lib32nss-nonlocal:: CC += -m32
 # i386_slibdir in eglibc/debian/sysdeps/amd64.mk
-ifeq ($(or $(IS_UBUNTU), $(call libc6_ge, 2.9-14~)), y)
+ifeq ($(or $(IS_UBUNTU),$(call libc6_ge,2.9-14~)),y)
 configure/lib32nss-nonlocal:: DEB_CONFIGURE_EXTRA_FLAGS += --libdir="\$${prefix}/lib32"
 binary-install/lib32nss-nonlocal:: DEB_DH_INSTALL_ARGS = 'lib32/*'
 else

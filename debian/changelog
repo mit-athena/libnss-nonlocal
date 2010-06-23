@@ -1,3 +1,9 @@
+libnss-nonlocal (1.11-0debathena2) unstable; urgency=low
+
+  * Install lib32nss-nonlocal to the right place on Ubuntu.
+
+ -- Anders Kaseorg <andersk@mit.edu>  Wed, 23 Jun 2010 03:50:33 -0400
+
 libnss-nonlocal (1.11-0debathena1) unstable; urgency=low
 
   * New upstream release.
