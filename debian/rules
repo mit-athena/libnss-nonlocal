@@ -6,10 +6,6 @@ DEB_AUTO_UPDATE_AUTOMAKE = 1.9
 DEB_AUTO_UPDATE_ACLOCAL = 1.9
 DEB_AUTO_UPDATE_LIBTOOL = pre
 
-# Fix http://bugs.debian.org/576967 : CDBS 0.4.77 in squeeze
-# incorrectly splits multiword $(CC) and $(CXX).
-override cdbs_set_nondefaultvars = $(foreach var,$1,$(if $(filter-out $(origin $(var)),default),$(var)='$($(var))'))
-
 include /usr/share/cdbs/1/rules/debhelper.mk
 include /usr/share/cdbs/1/class/autotools.mk
 
@@ -64,6 +60,9 @@ configure/lib64nss-nonlocal:: DEB_BUILD_GNU_TYPE = x86_64-linux
 configure/lib64nss-nonlocal:: CC += -m64 -D__x86_64__
 # amd64_slibdir in eglibc/debian/sysdeps/i386.mk
 configure/lib64nss-nonlocal:: DEB_CONFIGURE_EXTRA_FLAGS += --libdir="\$${prefix}/lib64"
+
+# Fix for CDBS ≥ 0.4.59ubuntu4, < 0.4.83ubuntu1 (karmic and lucid).
+configure/lib32nss-nonlocal configure/lib64nss-nonlocal:: DEB_CONFIGURE_SCRIPT_ENV += CC="$(CC)"
 
 configure/lib32nss-nonlocal configure/lib64nss-nonlocal::
 	$(DEB_CONFIGURE_INVOKE) $(cdbs_configure_flags) $(DEB_CONFIGURE_EXTRA_FLAGS) $(DEB_CONFIGURE_USER_FLAGS)
