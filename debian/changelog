@@ -1,3 +1,18 @@
+libnss-nonlocal (2.0-0debathena1) unstable; urgency=low
+
+  * New upstream release.
+    - Fix errno saving and restoring.
+    - Document nss-nonlocal-users and nss-local-users groups in README.
+    - Allow local whitelisting of nonlocal user and group memberships,
+      using the magic local ‘nss-nonlocal-users’ user and group.
+  * Create magic ‘nss-nonlocal-users’ user.
+  * Remove obsolete exclusion of glibc-private dependency.
+  * Use automake 1.10 and autoconf 2.61.
+  * Add multiarch support for distros from the future.
+  * Disable dh_buildinfo, which currently fails at multiarch.
+
+ -- Anders Kaseorg <andersk@mit.edu>  Wed, 30 Mar 2011 04:57:36 -0400
+
 libnss-nonlocal (1.11-0debathena3) unstable; urgency=low
 
   * Remove the workaround for buggy CDBS $(CC) splitting (fixed upstream).

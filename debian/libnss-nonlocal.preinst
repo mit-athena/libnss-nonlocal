@@ -16,6 +16,11 @@ set -e
 
 case "$1" in
     install|upgrade)
+	if ! getent passwd nss-nonlocal-users >/dev/null; then
+	    adduser --system --no-create-home --home /nonexistent \
+		--gecos 'Magic user for local group whitelist' \
+		nss-nonlocal-users
+	fi
 	if ! getent group nss-local-users >/dev/null; then
 	    addgroup --system nss-local-users
 	fi

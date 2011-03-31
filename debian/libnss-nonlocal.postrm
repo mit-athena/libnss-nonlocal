@@ -21,6 +21,9 @@ set -e
 
 case "$1" in
     purge)
+	if getent passwd nss-nonlocal-users >/dev/null; then
+	    deluser --system nss-nonlocal-users || :
+	fi
 	if getent group nss-local-users >/dev/null; then
 	    delgroup --system nss-local-users || :
 	fi
