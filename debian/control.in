@@ -9,7 +9,7 @@ Build-Depends: @cdbs@, gcc-multilib [amd64 i386] | gcc-4.1 (<< 4.1.2) [amd64 i38
 
 Package: libnss-nonlocal
 Architecture: any
-Pre-Depends: ${misc:Pre-Depends}
+Pre-Depends: ${misc:Pre-Depends}, adduser
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: nsswitch proxy module to prevent local account spoofing
  This nsswitch module acts as a proxy for other nsswitch modules like 
@@ -18,7 +18,7 @@ Description: nsswitch proxy module to prevent local account spoofing
 
 Package: lib32nss-nonlocal
 Architecture: amd64
-Pre-Depends: ${misc:Pre-Depends}
+Pre-Depends: ${misc:Pre-Depends}, adduser
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: nsswitch proxy module to prevent local account spoofing (32-bit library)
  This nsswitch module acts as a proxy for other nsswitch modules like 
@@ -30,7 +30,7 @@ Description: nsswitch proxy module to prevent local account spoofing (32-bit lib
 
 Package: lib64nss-nonlocal
 Architecture: i386
-Pre-Depends: ${misc:Pre-Depends}
+Pre-Depends: ${misc:Pre-Depends}, adduser
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: nsswitch proxy module to prevent local account spoofing (64-bit library)
  This nsswitch module acts as a proxy for other nsswitch modules like 
