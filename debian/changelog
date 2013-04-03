@@ -1,3 +1,11 @@
+libnss-nonlocal (2.0-0debathena3) UNRELEASED; urgency=low
+
+  * Switch from control.in to control (Trac: #561)
+  * Bump Standards-Version to 3.9.3
+  * Bump compat level to 7
+
+ -- Jonathan Reed <jdreed@mit.edu>  Wed, 03 Apr 2013 13:31:06 -0400
+
 libnss-nonlocal (2.0-0debathena2) unstable; urgency=low
 
   * Pre-Depend adduser.
