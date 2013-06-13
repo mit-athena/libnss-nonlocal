@@ -4,8 +4,8 @@ Priority: optional
 Maintainer: Anders Kaseorg <andersk@mit.edu>
 Vcs-Git: git://andersk.mit.edu/nss_nonlocal.git
 Vcs-Browser: http://andersk.mit.edu/gitweb/nss_nonlocal.git
-Standards-Version: 3.9.3
-Build-Depends: cdbs, debhelper, libtool, automake1.10, autoconf, gcc-multilib [amd64 i386] | gcc-4.1 (<< 4.1.2) [amd64 i386], libc6-dev-i386 [amd64], libc6-dev-amd64 [i386], lsb-release
+Standards-Version: 3.8.4
+Build-Depends: @cdbs@, gcc-multilib [amd64 i386] | gcc-4.1 (<< 4.1.2) [amd64 i386], libc6-dev-i386 [amd64], libc6-dev-amd64 [i386], lsb-release
 
 Package: libnss-nonlocal
 Architecture: any
