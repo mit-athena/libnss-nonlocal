@@ -1,5 +1,5 @@
 #!/bin/sh
-# postrm script for libnss-nonlocal
+# postrm script for libnss-nonlocal-common
 #
 # see: dh_installdeb(1)
 

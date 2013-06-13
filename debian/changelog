@@ -1,3 +1,15 @@
+libnss-nonlocal (2.1-0debathena1) unstable; urgency=low
+
+  * New upstream release.
+    - Support Automake 1.12.
+    - Guard one-time initialization with memory barriers.
+    - Make initgroups_dyn succeed when adding only magic groups.
+  * Rewrite packaging with Debhelper 7.
+  * Move magic user and group creation to separate libnss-nonlocal-common
+    package.
+
+ -- Anders Kaseorg <andersk@mit.edu>  Thu, 13 Jun 2013 04:43:16 -0400
+
 libnss-nonlocal (2.0-0debathena2) unstable; urgency=low
 
   * Pre-Depend adduser.

@@ -1,90 +1,67 @@
 #!/usr/bin/make -f
 
-DEB_AUTO_UPDATE_AUTOCONF = 2.61
-DEB_AUTO_UPDATE_AUTOHEADER = 2.61
-DEB_AUTO_UPDATE_AUTOMAKE = 1.10
-DEB_AUTO_UPDATE_ACLOCAL = 1.10
-DEB_AUTO_UPDATE_LIBTOOL = pre
+DEB_HOST_MULTIARCH ?= $(shell dpkg-architecture -qDEB_HOST_MULTIARCH)
 
-# dh_buildinfo fails at multiarch: http://bugs.debian.org/620104
-CDBS_BUILD_DEPENDS_rules_debhelper_buildinfo =
+# Work around http://bugs.debian.org/572077 (debhelper < 7.4.16)
+binary: binary-arch binary-indep ;
 
-include /usr/share/cdbs/1/rules/debhelper.mk
-include /usr/share/cdbs/1/class/autotools.mk
+%:
+	dh $@ --with autoreconf
 
-DEB_DESTDIR = $(CURDIR)/debian/tmp/
-DEB_DH_INSTALL_SOURCEDIR = $(DEB_DESTDIR)
-DEB_CONFIGURE_PREFIX = /
+all_flavors = libnss-nonlocal
+libnss-nonlocal_configure_args += --prefix=/
+libnss-nonlocal_dh_install = 'lib/*'
 
 ifneq ($(DEB_HOST_MULTIARCH),)
-    CDBS_BUILD_DEPENDS := $(CDBS_BUILD_DEPENDS)
     export DH_COMPAT = 9
-    DEB_CONFIGURE_EXTRA_FLAGS += $(MULTIARCH_CONFIGURE_FLAGS)
-    MULTIARCH_CONFIGURE_FLAGS = --libdir='$${prefix}/lib/$(DEB_HOST_MULTIARCH)'
-    DEB_DH_GENCONTROL_ARGS_libnss-nonlocal += -- -DMulti-Arch=same
+    libnss-nonlocal_configure_args += --libdir='$${prefix}/lib/$(DEB_HOST_MULTIARCH)'
+    libnss-nonlocal_dh_install = 'lib/$(DEB_HOST_MULTIARCH)/*'
+    libnss-nonlocal_dh_gencontrol = -- -DMulti-Arch=same
+else ifeq ($(shell hash dpkg-buildflags 2>/dev/null && echo y),y)
+    all_configure_args += $(foreach var,CFLAGS CPPFLAGS LDFLAGS,"$(var)=$$(dpkg-buildflags --get $(var))")
 endif
 
 IS_UBUNTU := $(if $(filter Ubuntu,$(shell lsb_release -is)),y)
 LIBC6_VERSION := $(shell dpkg-query --showformat='$${Version}' --show libc6)
 libc6_ge = $(shell dpkg --compare-versions '$(LIBC6_VERSION)' ge '$(1)' && echo y)
 
-debian/stamp-autotools-files: DEB_AUTO_UPDATE_AUTOMAKE += --foreign --add-missing
-
-debian/stamp-autotools-files: aclocal.m4
-aclocal.m4:
-	touch $@
-
-DEB_BUILDDIR = $(or $(DEB_BUILDDIR_$(cdbs_curpkg)),debian/build)
-
-REAL_DEB_HOST_GNU_TYPE := $(DEB_HOST_GNU_TYPE)
-
-DEB_BUILDDIR_lib32nss-nonlocal = debian/build_32
-cleanbuilddir/lib32nss-nonlocal:: clean/lib32nss-nonlocal
-configure/lib32nss-nonlocal:: MULTIARCH_CONFIGURE_FLAGS =
-configure/lib32nss-nonlocal:: cdbs_crossbuild =
+all_flavors += lib32nss-nonlocal
 # i386_configure_target in eglibc/debian/sysdeps/amd64.mk
 ifeq ($(or $(IS_UBUNTU),$(call libc6_ge,2.8+20080809)),y)
-configure/lib32nss-nonlocal:: DEB_BUILD_GNU_TYPE = i686-linux
+lib32nss-nonlocal_configure_args += --build=i686-linux
 else
-configure/lib32nss-nonlocal:: DEB_BUILD_GNU_TYPE = i486-linux
+lib32nss-nonlocal_configure_args += --build=i486-linux
 endif
 # i386_CC in eglibc/debian/sysdeps/amd64.mk
-configure/lib32nss-nonlocal:: CC += -m32
+lib32nss-nonlocal_configure_args += CC='$(CC) -m32'
 # i386_slibdir in eglibc/debian/sysdeps/amd64.mk
 ifeq ($(or $(IS_UBUNTU),$(call libc6_ge,2.9-14~)),y)
-configure/lib32nss-nonlocal:: DEB_CONFIGURE_EXTRA_FLAGS += --libdir="\$${prefix}/lib32"
-binary-install/lib32nss-nonlocal:: DEB_DH_INSTALL_ARGS = 'lib32/*'
+lib32nss-nonlocal_configure_args += --prefix=/ --libdir='$${prefix}/lib32'
+lib32nss-nonlocal_dh_install = 'lib32/*'
 else
-configure/lib32nss-nonlocal:: DEB_CONFIGURE_PREFIX = /emul/ia32-linux
-binary-install/lib32nss-nonlocal:: DEB_DH_INSTALL_ARGS = 'emul/ia32-linux/lib/*'
+lib32nss-nonlocal_configure_args += --prefix=/emul/ia32-linux
+lib32nss-nonlocal_dh_install = 'emul/ia32-linux/*'
 endif
 
-DEB_BUILDDIR_lib64nss-nonlocal = debian/build_64
-cleanbuilddir/lib64nss-nonlocal:: clean/lib64nss-nonlocal
-configure/lib64nss-nonlocal:: MULTIARCH_CONFIGURE_FLAGS =
-configure/lib64nss-nonlocal:: cdbs_crossbuild =
+all_flavors += lib64nss-nonlocal
 # amd64_configure_target in eglibc/debian/sysdeps/i386.mk
-configure/lib64nss-nonlocal:: DEB_BUILD_GNU_TYPE = x86_64-linux
+lib64nss-nonlocal_configure_args += --build=x86_64-linux
 # amd64_CC in eglibc/debian/sysdeps/i386.mk
-configure/lib64nss-nonlocal:: CC += -m64 -D__x86_64__
+lib64nss-nonlocal_configure_args += CC='$(CC) -m64 -D__x86_64__'
 # amd64_slibdir in eglibc/debian/sysdeps/i386.mk
-configure/lib64nss-nonlocal:: DEB_CONFIGURE_EXTRA_FLAGS += --libdir="\$${prefix}/lib64"
+lib64nss-nonlocal_configure_args += --prefix=/ --libdir="\$${prefix}/lib64"
 
-# Fix for CDBS ≥ 0.4.59ubuntu4, < 0.4.83ubuntu1 (karmic and lucid).
-configure/lib32nss-nonlocal configure/lib64nss-nonlocal:: DEB_CONFIGURE_SCRIPT_ENV += CC="$(CC)"
+flavors := $(filter $(all_flavors),$(shell dh_listpackages))
 
-configure/lib32nss-nonlocal configure/lib64nss-nonlocal::
-	$(DEB_CONFIGURE_INVOKE) $(cdbs_configure_flags) $(DEB_CONFIGURE_EXTRA_FLAGS) $(DEB_CONFIGURE_USER_FLAGS)
+define do_overrides
+override_$(1): $(addsuffix _$(1),$(2))
+$(addsuffix _$(1),$(filter-out REMAINING,$(2))): %_$(1):
+	$(1) -p$$* $(3)
+REMAINING_$(1): $(addsuffix _$(1),$(filter-out REMAINING,$(2)))
+	$(1) --remaining-packages $(4)
 
-build/lib32nss-nonlocal build/lib64nss-nonlocal::
-	+$(DEB_MAKE_INVOKE) $(DEB_MAKE_BUILD_TARGET)
+endef
 
-install/lib32nss-nonlocal install/lib64nss-nonlocal::
-	+$(DEB_MAKE_INVOKE) $(DEB_MAKE_INSTALL_TARGET)
-
-clean/lib32nss-nonlocal clean/lib64nss-nonlocal::
-	+-$(DEB_MAKE_INVOKE) -k $(DEB_MAKE_CLEAN_TARGET)
-
-clean::
-	rm -f aclocal.m4 config.guess config.sub install-sh ltmain.sh \
-	    configure config.h.in missing depcomp Makefile.in
+$(eval $(foreach auto,configure build install test clean,$(call do_overrides,dh_auto_$(auto),$(flavors),-Bdebian/build_$$* -- $$(all_$(auto)_args) $$($$*_$(auto)_args))))
+$(eval $(call do_overrides,dh_install,$(flavors) REMAINING,$$($$*_dh_install)))
+$(eval $(call do_overrides,dh_gencontrol,libnss-nonlocal REMAINING,$$($$*_dh_gencontrol)))

@@ -4,13 +4,18 @@ Priority: optional
 Maintainer: Anders Kaseorg <andersk@mit.edu>
 Vcs-Git: git://andersk.mit.edu/nss_nonlocal.git
 Vcs-Browser: http://andersk.mit.edu/gitweb/nss_nonlocal.git
-Standards-Version: 3.8.4
-Build-Depends: @cdbs@, gcc-multilib [amd64 i386] | gcc-4.1 (<< 4.1.2) [amd64 i386], libc6-dev-i386 [amd64], libc6-dev-amd64 [i386], lsb-release
+Standards-Version: 3.9.4
+Build-Depends: debhelper (>= 7.0.50~),
+ autotools-dev, dh-autoreconf,
+ gcc-multilib [amd64 i386] | gcc-4.1 (<< 4.1.2) [amd64 i386],
+ libc6-dev-i386 [amd64], libc6-dev-amd64 [i386],
+ lsb-release
 
 Package: libnss-nonlocal
 Architecture: any
-Pre-Depends: ${misc:Pre-Depends}, adduser
+Pre-Depends: ${misc:Pre-Depends}
 Depends: ${shlibs:Depends}, ${misc:Depends}
+Recommends: libnss-nonlocal-common
 Description: nsswitch proxy module to prevent local account spoofing
  This nsswitch module acts as a proxy for other nsswitch modules like 
  hesiod, but prevents non-local users from potentially gaining local 
@@ -18,8 +23,9 @@ Description: nsswitch proxy module to prevent local account spoofing
 
 Package: lib32nss-nonlocal
 Architecture: amd64
-Pre-Depends: ${misc:Pre-Depends}, adduser
+Pre-Depends: ${misc:Pre-Depends}
 Depends: ${shlibs:Depends}, ${misc:Depends}
+Recommends: libnss-nonlocal-common
 Description: nsswitch proxy module to prevent local account spoofing (32-bit library)
  This nsswitch module acts as a proxy for other nsswitch modules like 
  hesiod, but prevents non-local users from potentially gaining local 
@@ -30,8 +36,9 @@ Description: nsswitch proxy module to prevent local account spoofing (32-bit lib
 
 Package: lib64nss-nonlocal
 Architecture: i386
-Pre-Depends: ${misc:Pre-Depends}, adduser
+Pre-Depends: ${misc:Pre-Depends}
 Depends: ${shlibs:Depends}, ${misc:Depends}
+Recommends: libnss-nonlocal-common
 Description: nsswitch proxy module to prevent local account spoofing (64-bit library)
  This nsswitch module acts as a proxy for other nsswitch modules like 
  hesiod, but prevents non-local users from potentially gaining local 
@@ -39,3 +46,15 @@ Description: nsswitch proxy module to prevent local account spoofing (64-bit lib
  .
  This package contains a 64-bit version of the library for compatibility 
  on 32-bit architectures.
+
+Package: libnss-nonlocal-common
+Architecture: all
+Pre-Depends: ${misc:Pre-Depends}, adduser
+Depends: ${misc:Depends}
+Description: nsswitch proxy module to prevent local account spoofing (common package)
+ This nsswitch module acts as a proxy for other nsswitch modules like 
+ hesiod, but prevents non-local users from potentially gaining local 
+ privileges by spoofing local UIDs and GIDs.
+ .
+ This package creates the system users and groups that have special 
+ meanings to nss_nonlocal.
