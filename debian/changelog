@@ -1,3 +1,10 @@
+libnss-nonlocal (2.2-0debathena1) unstable; urgency=medium
+
+  * New upstream release.
+    - Support glibc 2.27.
+
+ -- Anders Kaseorg <andersk@mit.edu>  Sat, 05 May 2018 15:34:47 -0400
+
 libnss-nonlocal (2.1-0debathena1) unstable; urgency=low
 
   * New upstream release.
